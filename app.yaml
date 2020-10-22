@@ -1,0 +1,22 @@
+#application: top-apps
+#version: 1
+api_version: 1
+runtime: python27
+threadsafe: false
+service: assignment-top-apps
+
+env_variables:
+   GAE_USE_SOCKETS_HTTPLIB : ''
+
+handlers:
+  - url: .*
+    script: main.app
+
+builtins:
+  - deferred: on
+
+libraries:
+- name: grpcio
+  version: latest
+- name: webapp2
+  version: "2.5.2"

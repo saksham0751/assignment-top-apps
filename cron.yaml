@@ -1,0 +1,5 @@
+cron:
+- description: "sync apps job"
+  url: /rescrape_data
+  schedule: every 1 mins
+  target: assignment-top-apps

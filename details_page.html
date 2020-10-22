@@ -1,0 +1,65 @@
+<html>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+      .app-info{
+        display: block;
+        font-size: 25px;
+        font-style: bolder;
+        text-align: left;
+        padding-top: 40px;
+        float: left;
+      }
+      .row {
+          display: flex;
+        }
+      .column {
+        flex: 50%;
+      }
+      .header-class {
+        background-color: #010328;
+        width: 100%;
+        height: 8%;
+      }
+      *{
+        margin: 2%;
+        margin-top: 0%;
+      }
+      .checked {
+          color: orange;
+        }
+  </style>
+  <div class="header-class">
+<!--      <img src="logo_b.png" alt="logo" style="width: 20%; height: 100%">-->
+  </div>
+  <div class="body">
+      <div class="row">
+          <div class="column">
+            <img src="{{obj.icon}}" alt="alternatetext" style="width: 225px; height: 250px; float: right;">
+          </div>
+          <div class="column">
+            <div class="app-info">
+                {{obj.title}}
+                <br>
+                {{obj.developer}}
+                <br>
+                <br>
+                {{obj.score}} <span class="fa fa-star checked"></span>
+                <br>
+                Installs : {{obj.installs}}
+            </div>
+          </div>
+      </div>
+      <div class="row">
+          {% if obj.video %}
+            <iframe width="250" height="200" src="{{obj.video}}"></iframe>
+          {% endif %}
+          {% for image in obj.screenshots %}
+            <img src={{image}} width="250" height="200">
+          {% endfor %}
+      </div>
+      <div class="row">
+          <b>Description:</b>
+          {{obj.description}}
+      </div>
+  </div>
+</html>

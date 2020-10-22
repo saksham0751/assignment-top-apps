@@ -1,0 +1,3 @@
+queue:
+- name: sync-apps-queue
+  mode: pull
