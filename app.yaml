@@ -12,9 +12,6 @@ handlers:
   - url: .*
     script: main.app
 
-builtins:
-  - deferred: on
-
 libraries:
 - name: grpcio
   version: latest

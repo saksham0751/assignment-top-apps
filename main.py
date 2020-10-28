@@ -64,7 +64,8 @@ class RescrapeDataClass(webapp2.RequestHandler):
         """
         tasks = q.lease_tasks_by_tag(3600, 100, 'sync_apps')
         # Re scrape data from play-store for top charts
-        rescrape_data()
+        if tasks:
+            rescrape_data()
         # Delete the tasks which are leased from the pull queue
         q.delete_tasks(tasks)
 
@@ -74,6 +75,8 @@ def rescrape_data():
     Re scrapes data from play store to datastore db
     """
     category_to_app_ids_mapping = {}
+    app_id_to_obj_mapping = {}
+    app_ids = []
     # Make play store api call
     r = urlfetch.fetch(PLAY_STORE_URL)
     # self.response.write(r.content)
@@ -88,15 +91,15 @@ def rescrape_data():
         for item in top_apps_in_category:
             app_link = item.a['href']
             app_id = app_link.split('?')[1].split('id=')[1]
+            app_ids.append(app_id)
             category_to_app_ids_mapping[name].append(app_id)
-
+    query_result = Application.all().filter('app_id IN', app_ids)
+    for obj in query_result:
+        app_id_to_obj_mapping[obj.app_id] = obj
     for key, value in category_to_app_ids_mapping.items():
         for app_id in value:
             app_details = play_scraper.details(app_id)
-            query_result = Application.all().filter('app_id =', app_id)
-            app_obj = None
-            for obj in query_result:
-                app_obj = obj
+            app_obj = app_id_to_obj_mapping.get(app_id)
             if not app_obj:
                 app_obj = Application(app_id=app_id)
             app_obj.category = key
@@ -105,10 +108,11 @@ def rescrape_data():
             app_obj.icon = app_details['icon']
             app_obj.screenshots = app_details['screenshots']
             if app_obj.screenshots and len(app_obj.screenshots) > 4:
-                if not app_obj.video and len(app_obj.screenshots) > 5:
-                    app_obj.screenshots = app_obj.screenshots[0:5]
-                else:
+                if app_obj.video:
                     app_obj.screenshots = app_obj.screenshots[0:4]
+                else:
+                    if len(app_obj.screenshots) > 5:
+                        app_obj.screenshots = app_obj.screenshots[0:5]
             app_obj.video = app_details['video']
             app_obj.score = app_details['score']
             app_obj.installs = app_details['installs']
